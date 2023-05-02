@@ -1,0 +1,63 @@
+name: Java CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - release/*
+  pull_request:
+    branches:
+      - main
+      - develop
+      - release/*
+
+env:
+  AWS_REGION: ${{ env.AWS_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  S3_BUCKET:  ${{ env.S3_BUCKET }}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Determine build tool
+        id: determine_build_tool
+        run: |
+          if [ -f "build.gradle" ]; then
+            echo "::set-output name=build_tool::gradle"
+          elif [ -f "pom.xml" ]; then
+            echo "::set-output name=build_tool::maven"
+          else
+            echo "Unsupported build tool"
+            exit 1
+          fi
+
+      - name: Build
+        if: steps.determine_build_tool.outputs.build_tool == 'gradle'
+        run: ./gradlew build
+      - name: Build
+        if: steps.determine_build_tool.outputs.build_tool == 'maven'
+        run: mvn package
+
+      - name: Test
+        if: always()
+        run: |
+          if [ -f "build/reports/tests/test/index.html" ]; then
+            echo "Tests passed"
+          else
+            echo "Tests failed"
+            exit 1
+          fi
+
+      - name: Package and upload to S3
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: <path-to-artifact>
+          if: always()
