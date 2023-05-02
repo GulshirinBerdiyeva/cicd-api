@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-      - develop
+      - develop/*
       - release/*
   pull_request:
     branches:
       - main
-      - develop
+      - develop/*
       - release/*
 
 env:
@@ -50,3 +50,6 @@ jobs:
           echo "Tests passed"
           
       - name: Package and upload to S3
+        run: |
+          echo "Upload to S3"
+        
