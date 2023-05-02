@@ -13,10 +13,10 @@ on:
       - release/*
 
 env:
-  AWS_REGION: ${{ env.AWS_REGION }}
+  AWS_REGION: ${{ ENV.AWS_REGION }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  S3_BUCKET:  ${{ env.S3_BUCKET }}
+  S3_BUCKET:  ${{ ENV.S3_BUCKET }}
 
 jobs:
   build-and-test:
