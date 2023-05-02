@@ -46,10 +46,10 @@ jobs:
         run: mvn clean
 
       - name: Test
-        run: |
+        run: sleep 7
           echo "Tests passed"
           
       - name: Package and upload to S3
-        run: |
+        run: sleep 14
           echo "Upload to S3"
         
