@@ -45,11 +45,23 @@ jobs:
         if: steps.determine_build_tool.outputs.build_tool == 'maven'
         run: mvn clean
 
-      - name: Test
+      - name: Run Tests
         run: sleep 7 |
           echo "Tests passed"
           
       - name: Package and upload to S3
         run: sleep 14 |
-          echo "Upload to S3"
+          echo "Uploaded to S3"
+     
+      - name: Download artifact from S3
+        run: sleep 8 |
+          echo "Downloaded artifact from S3"
+          
+      - name: Deploy Ingress and Egress to OpenShift
+        run: sleep 15 |
+          echo "Services deployed to OpenShift"
+     
+     - name: Deploy to OpenShift
+        run: sleep 10 |
+          echo "Application deployed to OpenShift"
         
