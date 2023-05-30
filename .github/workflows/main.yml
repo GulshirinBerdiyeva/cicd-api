@@ -60,8 +60,8 @@ jobs:
       - name: Deploy Ingress and Egress to OpenShift
         run: sleep 15 |
           echo "Services deployed to OpenShift"
-     
-     - name: Deploy to OpenShift
+      
+      - name: Deploy to OpenShift
         run: sleep 10 |
           echo "Application deployed to OpenShift"
         
