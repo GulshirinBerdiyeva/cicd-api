@@ -1,0 +1,58 @@
+name: Java CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - develop/*
+      - release/*
+  pull_request:
+    branches:
+      - main
+      - develop/*
+      - release/*
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    environment: develop
+
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+        
+      - name: Determine build tool
+        id: determine_build_tool
+        run: |
+          if [ -f "build.gradle" ]; then
+            echo "::set-output name=build_tool::gradle"
+          elif [ -f "pom.xml" ]; then
+            echo "::set-output name=build_tool::maven"
+          else
+            echo "Unsupported build tool"
+            exit 1
+          fi
+
+      - name: Build Gradle and Test
+        if: steps.determine_build_tool.outputs.build_tool == 'gradle'
+        run: gradle build
+      - name: Build Maven and Test
+        if: steps.determine_build_tool.outputs.build_tool == 'maven'
+        run: mvn clean install
+        
+      - name: Upload to AWS S3
+        run: aws s3 cp target/*.jar s3://ci-cd-api/
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
